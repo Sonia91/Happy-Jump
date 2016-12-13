@@ -1,0 +1,24 @@
+#Thu Mar 15 10:55:48 CST 2012
+eclipse.preferences.version=1
+encoding//src/tw/edu/ntut/csie/game/Game.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/GameObject.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/GameView.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/KeyEventHandler.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/Pointer.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/PointerEventHandler.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/ReleasableResource.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/SensorEventHandler.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/core/Audio.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/core/MovingBitmap.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/core/SoundEffects.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/engine/EmptyState.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/engine/EventDispatcher.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/engine/GameEngine.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/engine/GameFrame.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/engine/SurfaceEventHandler.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/extend/Animation.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/extend/BitmapButton.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/extend/ButtonEventHandler.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/extend/Integer.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/state/AbstractGameState.java=UTF-8
+encoding//src/tw/edu/ntut/csie/game/state/GameState.java=UTF-8

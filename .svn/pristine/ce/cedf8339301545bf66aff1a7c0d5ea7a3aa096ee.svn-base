@@ -1,0 +1,89 @@
+package tw.edu.ntut.csie.game;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
+import tw.edu.ntut.csie.game.core.MovingBitmap;
+
+public class Coin implements GameObject  {
+	private int coinType;
+	private List<MovingBitmap> _coin;
+	private MovingBitmap _topCoin;
+	private MovingBitmap _buttomCoin;
+	
+	public Coin(){
+		coinType = 0;
+		_coin = new ArrayList<MovingBitmap>(1000);
+		
+		
+	}
+
+	public void setCoinType(int coinType, int topStairY){
+		this.coinType = coinType;
+		switch(coinType){
+			case 1:
+				creatLineCoin(topStairY);
+				break;
+			case 2:
+				creatSquareCoin(topStairY);
+				break;
+			default:
+		}
+	}
+	
+	public void creatLineCoin(int topStairY){
+		int xLocation=((int)Math.random()*175)+50;
+		for(int i=0;i<20;i++){
+			_coin.get(i).loadBitmap(R.drawable.coin);
+			_coin.get(i).setLocation(xLocation, topStairY - _coin.get(i).getHeight() - 50 - (13*i));//¶¡¶Z18
+		}
+		_topCoin = _coin.get(_coin.size()-1);
+		_buttomCoin = _coin.get(0);
+	}
+	
+	public void creatSquareCoin(int topStairY){
+		for(int i=0; i<9; i++){
+			int xLocation=((int)Math.random()*125)+50;
+			for(int j=0; j<9; j++){
+				_coin.get( (i*9) + j ).loadBitmap(R.drawable.coin);
+				_coin.get( (i*9) + j ).setLocation(xLocation + ( (int)(j%3))*20 ,
+										topStairY - _coin.get(i).getHeight() - ((int)(j/3))*20 - i*150);
+			}
+		}
+		_topCoin = _coin.get(_coin.size()-1);
+		_buttomCoin = _coin.get(0);
+	}
+	
+	public MovingBitmap getTopCoin(){
+		return this._topCoin;
+	}
+	
+	public MovingBitmap getButtomCoin(){
+		return this._buttomCoin;
+	}
+	
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		for(int i=0; i<_coin.size(); i++){
+			_coin.get(i).release();
+		}
+		_coin = null;
+	}
+
+	@Override
+	public void move() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		for(int i=0; i<_coin.size(); i++){
+			_coin.get(i).show();
+		}
+	}
+
+}

@@ -1,0 +1,392 @@
+package tw.edu.ntut.csie.game.state;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+
+import tw.edu.ntut.csie.game.Game;
+import tw.edu.ntut.csie.game.GameObject;
+import tw.edu.ntut.csie.game.MoveCloud;
+import tw.edu.ntut.csie.game.Pointer;
+import tw.edu.ntut.csie.game.R;
+import tw.edu.ntut.csie.game.Stair;
+import tw.edu.ntut.csie.game.leadingRole;
+import tw.edu.ntut.csie.game.core.Audio;
+import tw.edu.ntut.csie.game.core.MovingBitmap;
+import tw.edu.ntut.csie.game.extend.Animation;
+import tw.edu.ntut.csie.game.extend.Integer;
+import tw.edu.ntut.csie.game.engine.GameEngine;
+
+
+
+public class StateRun extends GameState {
+	public static final int DEFAULT_SCORE_DIGITS = 5;
+	private MovingBitmap _background;
+	private MovingBitmap _android;
+    //private MovingBitmap _cloud;
+	private MovingBitmap _door;
+	private MovingBitmap _message;
+	private MovingBitmap _under;
+	private leadingRole role;
+	private int shiftpixel;
+	private int _rx,_ry;
+	private Stair[] _stair;
+	private MoveCloud[] _cloud;
+	//private GameMap gameMap = new GameMap();
+	
+	private Animation _flower;
+	
+	private Integer _scores;
+	
+	private boolean _grab;
+	//private int _cx, _cy;
+	
+	private Audio _music;
+	private Audio _basicmatch;
+
+	public StateRun(GameEngine engine) {
+		super(engine);
+	}
+
+	@Override
+	public void initialize(Map<String, Object> data) {		
+		_under = new MovingBitmap(R.drawable.under);
+		_under.resize((int)(_under.getWidth()*0.64), (int)(_under.getHeight()*0.64));
+		_under.setLocation((376/2)-(_under.getWidth()/2), 640-_under.getHeight());
+		role = new leadingRole();
+		role.initialize();
+		shiftpixel=0;
+		_rx=role.getX();
+		_ry=role.getY();
+		
+		
+		_stair = new Stair[15];
+		for(int i=0;i<15;i++){
+			_stair[i] = new Stair();
+		}
+		for(int i=0;i<15;i++){
+			_stair[i].setLocation((int)(Math.random()*(376-_stair[i].getWidth()))
+								  ,(640-_under.getHeight()-role.getHeight()-5)-(60*(i+1))
+								  +(int)(Math.random()*(50-_stair[i].getHeight())));
+		}
+		
+		_background = new MovingBitmap(R.drawable.background);
+		_background.resize(376, 660);
+		_background.setLocation(0, 0);
+		
+		_message = new MovingBitmap(R.drawable.message, 130, 150);
+	
+		_android = new MovingBitmap(R.drawable.android_green);
+		_android.setLocation(100, 200);
+		
+		_cloud = new MoveCloud[4];
+		for(int i=0;i<4;i++){
+			_cloud[i] = new MoveCloud();
+		}
+		for(int i=0;i<4;i++){
+			double randomsize;
+			randomsize = Math.random();
+			if(randomsize>=0.5){
+				randomsize -= 0.5;
+			}
+			int size = (int)(randomsize*150);
+			_cloud[i].Newpic();
+			_cloud[i].resize(_cloud[i].getWidth()-size,(int)(_cloud[i].getHeight()*_cloud[i].sizechange(_cloud[i].getWidth()-size,_cloud[i].getWidth())));				    
+		    _cloud[i].setLocation((int)(Math.random()*(-300-_cloud[i].getWidth())), 
+				                  (640-_under.getHeight()-30)-((640-_under.getHeight())/3
+				            	  *(i+1))+(int)(Math.random()*((640-_under.getHeight()-10)/3
+				            	  -_cloud[i].getHeight())));
+		}
+		/*_cloud = new MovingBitmap(R.drawable.cloud);
+		_cx = 100;
+		_cy = 50;
+		_cloud.setLocation(_cx, _cy);*/
+		
+		_door = new MovingBitmap(R.drawable.door);
+		_door.setLocation(300, 200);
+		
+	    _scores = new Integer(DEFAULT_SCORE_DIGITS, 1, 50, 10);
+		_flower = new Animation();
+		_flower.setLocation(560, 310);
+		_flower.addFrame(R.drawable.flower1);
+		_flower.addFrame(R.drawable.flower2);
+		_flower.addFrame(R.drawable.flower3);
+		_flower.addFrame(R.drawable.flower4);
+		_flower.addFrame(R.drawable.flower5);
+		_flower.setDelay(2);
+		
+		//_music = new Audio(R.raw.ntut);
+		//_music.setRepeating(true);
+		//_music.play();
+		
+		_basicmatch = new Audio(R.raw.basicmatch);
+		_basicmatch.setRepeating(false);
+		
+		
+		_grab = false;
+	}
+	
+	@Override
+	public void move() {
+		_flower.move();
+		for(int i=0;i<4;i++){
+		    _cloud[i].move();
+			if (_cloud[i].getX()>_background.getWidth()+50){
+				double randomsize;
+				randomsize = Math.random();
+				if(randomsize>=0.5){
+					randomsize -= 0.5;
+				}
+				int size = (int)(randomsize*120)+200;
+				_cloud[i].Newpic();
+				_cloud[i].resize(_cloud[i].getWidth()-size,(int)(_cloud[i].getHeight()*_cloud[i].sizechange(_cloud[i].getWidth()-size,_cloud[i].getWidth())));				    
+				_cloud[i].setLocation((int)(Math.random()*(-340-_cloud[i].getWidth())), 
+					                  (640-_under.getHeight()-50)-((640-_under.getHeight())/3
+					            	  *(i+1))+(int)(Math.random()*((640-_under.getHeight()-10)/3
+					            	  -_cloud[i].getHeight())));
+			}			
+    }
+		//_cloud.setLocation(_cx, _cy);		
+		//role.SetX(_rx);
+		/*if(role.getRising()==true && role.getY() < 320){
+			
+		}else{
+			role.move();
+		}*/
+		
+		if (role.getRising()) {			// 上升狀態
+			if (role.getVelocity() > 0) {
+				if(role.getY()<=320){
+					_under.setLocation(_under.getX(), _under.getY()+role.getVelocity());
+					for(int i=0;i<15;i++){
+						_stair[i].setLocation(_stair[i].getX(), _stair[i].getY()+role.getVelocity());
+					}
+					shiftpixel+=role.getVelocity();
+					role.subVelocity(2);
+				}else if(role.getY()>320){
+					_ry -= role.getVelocity();	// 當速度 > 0時，y軸上升(移動velocity個點，velocity的單位為 點/次)
+					//velocity--;		// 受重力影響，下次的上升速度降低
+					role.subVelocity(2);
+				}
+			} else {
+				role.setRising(false); // 當速度 <= 0，上升終止，下次改為下降
+				role.setVelocity(1);	// 下降的初速(velocity)為1
+			}
+		} else {				// 下降狀態
+			//if (_ry < role.getFloor()-1-role.getHeight()) {  // 當y座標還沒碰到地板
+				
+			for(int i=0;i<15;i++){
+				if(role.isStepStair(_stair[i])){
+					_ry=_stair[i].getY();
+					role.setLocation(role.getX(), _ry-role.getHeight());
+					_basicmatch.play();
+					role.setRising(true);
+					role.setVelocity(role.getInitialVelocity());
+					shiftpixel=0;
+					break;
+				}
+			}if(role.isStepUnder(_under)){
+				_ry=_under.getY();
+				role.setLocation(role.getX(), _ry-role.getHeight());
+				_basicmatch.play();
+				role.setRising(true);
+				role.setVelocity(role.getInitialVelocity());
+				shiftpixel=0;
+			}
+			
+			
+			if(!role.getRising()){
+				if(role.getY()<(640-_under.getHeight()-50)){
+					_ry += role.getVelocity();	// y軸下降(移動velocity個點，velocity的單位為 點/次)
+					//velocity++;		// 受重力影響，下次的下降速度增加
+					if(role.getVelocity()<15){
+						role.addVelocity(2);
+					}
+					/**if (_ry > (640-196-1-role.getHeight())){
+						_ry = role.getFloor() - 1;  
+						role.setRising(true);	
+						role.setVelocity(role.getInitialVelocity());
+						shiftpixel=0;
+					}*/
+				}else{ //if(role.getY()>=(640-196)){
+					_under.setLocation(_under.getX(), _under.getY()-role.getVelocity());
+					for(int i=0;i<15;i++){
+						_stair[i].setLocation(_stair[i].getX(), _stair[i].getY()-role.getVelocity());
+					}
+					if(role.getVelocity()<15){
+						role.addVelocity(2);
+					}
+				}
+			}
+			//} else {
+				//_ry = role.getFloor() - 1;  // 當y座標低於地板，更正為地板上
+				//role.setRising(true);	// 探底反彈，下次改為上升
+				//role.setVelocity(role.getInitialVelocity()); // 重設上升初始速度
+			//}
+		}
+		role.setLocation(_rx, _ry-role.getHeight());
+		
+		
+		
+	}
+
+	@Override
+	public void show() {
+		// 呼叫順序為貼圖順序		
+		_background.show();
+		//_scores.show();
+		_flower.show();
+		_message.show();
+		//_cloud.show();
+		for(int i=0;i<4;i++){		
+			_cloud[i].show();
+		}
+		_door.show();
+		_android.show();
+		_under.show();
+		for(int i = 0;i<15;i++){
+			int hide = (int)(Math.random()*10);
+			if(hide==10){
+				continue;
+			}else{
+			_stair[i].show();
+			}
+		}
+		role.show();
+	}
+
+	@Override
+	public void release() {
+		_background.release();
+		_scores.release();
+		_android.release();
+		_flower.release();
+		_message.release();
+		//_cloud.release();
+		for(int i=0;i<4;i++){
+			_cloud[i].release();
+		}
+		//_music.release();
+		_door.release();
+		_under.release();
+		role.release();
+		_basicmatch.release();
+		for(int i=0;i<15;i++){
+			_stair[i].release();
+		}
+		
+		_background = null;
+		_scores = null;
+		_android = null;
+		_flower = null;
+		_message = null;
+		//_cloud = null;
+		for(int i=0;i<4;i++){
+			_cloud[i] = null;
+		}
+		//_music = null;
+		_door = null;	
+		_under = null;
+		role = null;
+		_basicmatch = null;
+		for(int i=0;i<15;i++){
+			_stair[i]=null;
+		}
+	}
+
+	@Override
+	public void keyPressed(int keyCode) {
+		// TODO Auto-generated method stub
+		/**if(keyCode == KeyEvent.KEYCODE_VOLUME_UP){
+			if(_basicmatch.getRightVol()<10){
+				_basicmatch.addVolume(2);
+			}
+		}
+		if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN){
+			if(_basicmatch.getRightVol()>1){
+				_basicmatch.addVolume(-2);
+			}
+		}*/
+	}
+
+	@Override
+	public void keyReleased(int keyCode) {
+		// TODO Auto-generated method stub
+	}
+
+
+	public void orientationChanged(float pitch, float azimuth, float roll) {
+		/**if(roll > 15 && roll < 60 && _cx > 50)
+			_cx -= 2;
+		if(roll < -15 && roll > -60 && _cx + _cloud.getWidth() < 500)
+			_cx += 2;*/
+		//腳色左右移動測試----------------------------
+		if(roll > 1 && roll < 90 ){
+			if(_rx > 0-role.getWidth()){
+				_rx -= (int)((Math.sqrt(roll))*2);
+			}else{
+				_rx = 376;
+			}
+		}
+		if(roll < -1 && roll > -90 ){
+			if(_rx < 376){
+				_rx += (int)((Math.sqrt(-(roll)))*2);
+			}else{
+				_rx = 0-role.getWidth();
+			}
+		}
+		//--------------------------------------
+	}
+
+	@Override
+	public void accelerationChanged(float dX, float dY, float dZ) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public boolean pointerPressed(List<Pointer> pointers) {
+		_message.setVisible(false);
+		if(pointers.size() == 1) {
+			int touchX = pointers.get(0).getX();
+			int touchY = pointers.get(0).getY();
+			if(touchX > _android.getX() && touchX < _android.getX() + _android.getWidth() &&
+					touchY > _android.getY() && touchY < _android.getY() + _android.getHeight()) {
+				_grab = true;
+			} else {
+				_grab = false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean pointerMoved(List<Pointer> pointers) {
+		if(_grab)
+			_android.setLocation(pointers.get(0).getX() - _android.getWidth() / 2, pointers.get(0).getY() - _android.getHeight() / 2);
+		int moveX = _android.getX();
+		int moveY = _android.getY();
+		if(moveX + _android.getWidth() / 2 > _door.getX() && moveX < _door.getX() + _door.getWidth() / 2 &&
+				moveY + _android.getHeight() / 2 > _door.getY() && moveY < _door.getY() + _door.getHeight() / 2)
+			changeState(Game.OVER_STATE);	
+		return false;
+	}
+
+	@Override
+	public boolean pointerReleased(List<Pointer> pointers) {
+		_grab = false;
+		return false;
+	}
+
+	@Override
+	public void pause() {
+		//_music.pause();
+		_basicmatch.pause();
+	}
+
+	@Override
+	public void resume() {
+		//_music.resume();
+		_basicmatch.resume();
+	}
+}

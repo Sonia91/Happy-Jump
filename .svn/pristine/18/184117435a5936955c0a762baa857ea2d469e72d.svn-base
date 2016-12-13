@@ -1,0 +1,133 @@
+package tw.edu.ntut.csie.game;
+
+import tw.edu.ntut.csie.game.core.MovingBitmap;
+import android.R.bool;
+import tw.edu.ntut.csie.game.SensorEventHandler;
+import tw.edu.ntut.csie.game.engine.GameEngine;
+
+
+public class leadingRole implements GameObject{
+	private	int x, y;				// 圖形座標
+	private int floor;				// 地板的Y座標
+	private boolean rising;			// true表上升、false表下降
+	private int initial_velocity;	// 初始速度
+	private int velocity;			// 目前的速度(點/次)
+	private MovingBitmap Role;
+	//private CAnimation animation;	// 利用動畫作圖形
+	
+	public leadingRole(){
+		int INITIAL_VELOCITY = 40;
+		int FLOOR = 548;
+		Role = new MovingBitmap(R.drawable.jelly);
+		Role.resize(60, Role.getHeight()/2);
+		floor=FLOOR;
+		x=188-(Role.getWidth()/2);
+		y=floor-1;
+		rising = true;
+		initial_velocity = INITIAL_VELOCITY;
+		velocity = initial_velocity;
+	}
+	public void initialize(){
+		Role.setLocation(x, y-Role.getHeight()+6);
+	}
+	public	void SetFloor(int floor){
+		this.floor = floor;
+	}
+	public int getX() {
+		return x;
+	}
+	public int getY() {
+		return y;
+	}
+	public int getWidth() {
+		return Role.getWidth();
+	}
+	public int getHeight() {
+		return Role.getHeight();
+	}
+	public void SetX(int x){
+		this.x=x;
+	}
+/*	public void orientationChanged(float pitch, float azimuth, float roll) {
+		if(roll > 15 && roll < 60 && x > 0)
+			x -= 2;
+		if(roll < -15 && roll > -60 && x + Role.getWidth() < 376-Role.getWidth())
+			x += 2;
+		Role.setLocation(x, y-Role.getHeight());
+	}*/
+/*	public	void SetXY(int x,int y){
+		this.x=x;
+		this.y=y;
+	}*/
+	/*public	void SetVelocity(int velocity){
+		this.velocity = velocity;
+		this.initial_velocity = velocity;
+	}*/
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		Role.release();
+		Role = null;
+	}
+	@Override
+	public void move() {
+		// TODO Auto-generated method stub
+		/*if (rising) {			// 上升狀態
+			if (velocity > 0) {
+				y -= velocity;	// 當速度 > 0時，y軸上升(移動velocity個點，velocity的單位為 點/次)
+				//velocity--;		// 受重力影響，下次的上升速度降低
+				velocity -= 4;
+			} else {
+				rising = false; // 當速度 <= 0，上升終止，下次改為下降
+				velocity = 1;	// 下降的初速(velocity)為1
+			}
+		} else {				// 下降狀態
+			if (y < floor-1-Role.getHeight()) {  // 當y座標還沒碰到地板
+				y += velocity;	// y軸下降(移動velocity個點，velocity的單位為 點/次)
+				//velocity++;		// 受重力影響，下次的下降速度增加
+				velocity += 3;
+			} else {
+				y = floor - 1;  // 當y座標低於地板，更正為地板上
+				rising = true;	// 探底反彈，下次改為上升
+				velocity = initial_velocity; // 重設上升初始速度
+			}
+		}
+		Role.setLocation(x, y-Role.getHeight());*/
+	}
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		Role.show();
+	}
+	public void reJump(){
+		this.velocity = initial_velocity;
+		rising = true;
+	}
+	public boolean getRising(){
+		return rising;
+	}
+	public void setRising(boolean r){
+		this.rising = r;
+	}
+	public int getVelocity(){
+		return velocity;
+	}
+	public void setVelocity(int v){
+		this.velocity = v;
+	}
+	public void subVelocity(int v){
+		this.velocity -= v;
+	}
+	public void addVelocity(int v){
+		this.velocity += v;
+	}
+	public int getFloor(){
+		return floor;
+	}
+	public int getInitialVelocity(){
+		return initial_velocity;
+	}
+	public void setLocation(int x, int y){
+		Role.setLocation(x, y);
+	}
+};

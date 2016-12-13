@@ -1,0 +1,76 @@
+package tw.edu.ntut.csie.game;
+
+import tw.edu.ntut.csie.game.core.MovingBitmap;
+import android.R.bool;
+
+public class leadingRole implements GameObject{
+	private	int x, y;				// 圖形座標
+	private int floor;				// 地板的Y座標
+	private boolean rising;			// true表上升、false表下降
+	private int initial_velocity;	// 初始速度
+	private int velocity;			// 目前的速度(點/次)
+	private MovingBitmap Role;
+	//private CAnimation animation;	// 利用動畫作圖形
+	
+	public leadingRole(){
+		int INITIAL_VELOCITY = 30;
+		int FLOOR = 548;
+		Role = new MovingBitmap(R.drawable.role);
+		floor=FLOOR;
+		x=162;
+		y=floor-1;
+		rising = true;
+		initial_velocity = INITIAL_VELOCITY;
+		velocity = initial_velocity;
+	}
+	public void initialize(){
+		Role.setLocation(x, y-62);
+	}
+	public	void SetFloor(int floor){
+		this.floor = floor;
+	}
+	public	void SetXY(int x,int y){
+		this.x=x;
+		this.y=y;
+	}
+	public	void SetVelocity(int velocity){
+		this.velocity = velocity;
+		this.initial_velocity = velocity;
+	}
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		Role.release();
+		Role = null;
+	}
+	@Override
+	public void move() {
+		// TODO Auto-generated method stub
+		if (rising) {			// 上升狀態
+			if (velocity > 0) {
+				y -= velocity;	// 當速度 > 0時，y軸上升(移動velocity個點，velocity的單位為 點/次)
+				//velocity--;		// 受重力影響，下次的上升速度降低
+				velocity -= 4;
+			} else {
+				rising = false; // 當速度 <= 0，上升終止，下次改為下降
+				velocity = 1;	// 下降的初速(velocity)為1
+			}
+		} else {				// 下降狀態
+			if (y < floor-1-62) {  // 當y座標還沒碰到地板
+				y += velocity;	// y軸下降(移動velocity個點，velocity的單位為 點/次)
+				//velocity++;		// 受重力影響，下次的下降速度增加
+				velocity += 3;
+			} else {
+				y = floor - 1;  // 當y座標低於地板，更正為地板上
+				rising = true;	// 探底反彈，下次改為上升
+				velocity = initial_velocity; // 重設上升初始速度
+			}
+		}
+		Role.setLocation(x, y-62);
+	}
+	@Override
+	public void show() {
+		// TODO Auto-generated method stub
+		Role.show();
+	}
+};
